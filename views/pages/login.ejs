@@ -1,0 +1,32 @@
+<%- include('../partials/header') %> <!-- Login Page -->
+
+    <div class="container auth-container">
+        <div class="feature-card auth-card">
+            <h2 class="text-center mb-3">Welcome <span class="highlight text-gold">Back</span></h2>
+
+            <form action="/auth/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+
+            <p class="text-center mt-3 text-muted">
+                Need an account? <a href="/register" class="highlight">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .text-gold {
+            color: var(--accent);
+        }
+    </style>
+    <%- include('../partials/footer') %>

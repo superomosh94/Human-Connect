@@ -1,0 +1,81 @@
+<%- include('../partials/header') %>
+
+    <div class="container dashboard-container" style="padding: 60px 0;">
+        <div class="dashboard-header text-center mb-5">
+            <h2 class="hero-title">Third Thing <span class="highlight">Generator</span></h2>
+            <p class="card-desc">Notice something together. Bridge the gap. Connect instantly.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="feature-card mb-4">
+                    <div class="form-group">
+                        <label for="context-input">Describe your current environment...</label>
+                        <textarea id="context-input" class="form-control" rows="3"
+                            placeholder="e.g. A busy bookstore with too many copies of the same bestseller, or a rainy airport gate with one flickering light..."></textarea>
+                    </div>
+                    <button id="generate-starters-btn" class="btn btn-primary w-100 mt-3">Generate Starters <i
+                            class="fa-solid fa-wand-magic-sparkles"></i></button>
+                </div>
+
+                <div id="starters-results" class="row">
+                    <!-- Results will be injected here -->
+                </div>
+
+                <div id="loading-state" class="text-center py-5" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+                    <p>SARA is brainstorming environmental bridges...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generate-starters-btn').addEventListener('click', async () => {
+            const context = document.getElementById('context-input').value.trim();
+            if (!context) return alert('Please enter some context!');
+
+            const btn = document.getElementById('generate-starters-btn');
+            const results = document.getElementById('starters-results');
+            const loader = document.getElementById('loading-state');
+
+            btn.disabled = true;
+            results.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/third-thing/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ context })
+                });
+
+                const data = await response.json();
+                loader.style.display = 'none';
+                btn.disabled = false;
+
+                if (data.success) {
+                    results.innerHTML = data.starters.map(s => `
+                <div class="col-12 mb-4">
+                    <div class="feature-card starter-card">
+                        <h4 class="highlight mb-3">"${s.text}"</h4>
+                        <div class="d-flex align-items-center">
+                            <div class="mr-3 text-primary"><i class="fa-solid fa-lightbulb fa-lg"></i></div>
+                            <p class="small text-muted mb-0"><strong>Why it works:</strong> ${s.why}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+                } else {
+                    alert('Failed to generate. Try again.');
+                }
+            } catch (err) {
+                console.error(err);
+                loader.style.display = 'none';
+                btn.disabled = false;
+                alert('Connection error.');
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= typeof title !=='undefined' ? title : 'Shared Reality' %> | Shared Reality
+    </title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#8B5CF6">
+    <link rel="apple-touch-icon" href="/img/icon-192.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Registration Failed', err));
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-container">
+            <a href="/" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-shapes"></i></span>
+                Shared Reality
+            </a>
+
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="/"
+                            class="<%= typeof page !== 'undefined' && page === 'home' ? 'active' : '' %>">Home</a></li>
+                    <% if (typeof user !=='undefined' && user) { %>
+                        <li><a href="/dashboard"
+                                class="<%= typeof page !== 'undefined' && page === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+                        </li>
+                        <li><a href="/simulator"
+                                class="<%= typeof page !== 'undefined' && page === 'simulator' ? 'active' : '' %>">Simulator</a>
+                        </li>
+                        <li><a href="/daily-drill"
+                                class="<%= typeof page !== 'undefined' && page === 'daily-drill' ? 'active' : '' %>">Daily
+                                Drill</a>
+                        </li>
+                        <li><a href="/journal"
+                                class="<%= typeof page !== 'undefined' && page === 'journal' ? 'active' : '' %>">Journal</a>
+                        </li>
+                        <li><a href="/community/shared-worlds"
+                                class="<%= typeof page !== 'undefined' && page === 'shared-worlds' ? 'active' : '' %>">Community
+                                Wall</a>
+                        </li>
+                        <li><a href="/playground/third-thing"
+                                class="<%= typeof page !== 'undefined' && page === 'playground' ? 'active' : '' %>">Tool
+                                Playground</a>
+                        </li>
+                        <li class="user-menu">
+                            <span class="username">Hello, <%= user.username %></span>
+                            <a href="/logout" class="btn btn-sm btn-outline">Logout</a>
+                        </li>
+                        <% } else { %>
+                            <li><a href="/login"
+                                    class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">Login</a>
+                            </li>
+                            <li><a href="/register" class="btn btn-sm btn-primary">Get Started</a></li>
+                            <% } %>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <% if (typeof success !=='undefined' && success.length> 0) { %>
+            <div class="container" style="margin-top: 20px;">
+                <div class="alert alert-success">
+                    <%= success %>
+                </div>
+            </div>
+            <% } %>
+
+                <% if (typeof error !=='undefined' && error.length> 0) { %>
+                    <div class="container" style="margin-top: 20px;">
+                        <div class="alert alert-error">
+                            <%= error %>
+                        </div>
+                    </div>
+                    <% } %>

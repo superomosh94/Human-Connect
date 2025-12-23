@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+    <div class="container" style="padding: 40px 0;">
+        <div class="feature-card auth-card" style="max-width: 800px; margin: 0 auto;">
+            <div class="profile-header text-center mb-5">
+                <div class="avatar mb-3"
+                    style="width: 100px; height: 100px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2.5rem; color: white;">
+                    <%= user.username.charAt(0).toUpperCase() %>
+                </div>
+                <h2>
+                    <%= user.username %>
+                </h2>
+                <p class="text-muted">
+                    <%= user.email %>
+                </p>
+                <span class="badge"
+                    style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 20px;">Level <%=
+                        user.level %> Explorer</span>
+            </div>
+
+            <hr style="border-color: var(--border); margin: 30px 0;">
+
+            <div class="settings-section">
+                <h4>Account Settings</h4>
+                <form>
+                    <div class="form-group">
+                        <label>Update Username</label>
+                        <input type="text" class="form-control" value="<%= user.username %>">
+                    </div>
+                    <button class="btn btn-outline">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

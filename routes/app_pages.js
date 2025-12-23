@@ -1,0 +1,67 @@
+const express = require('express');
+const router = express.Router();
+
+// Middleware to ensure user is logged in
+function ensureAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next();
+    }
+    req.flash('error', 'Please login to view this page');
+    res.redirect('/login');
+}
+
+// Simulator Page
+router.get('/simulator', ensureAuthenticated, (req, res) => {
+    res.render('pages/simulator', {
+        title: 'World Builder Simulator',
+        page: 'simulator',
+        user: req.session.user
+    });
+});
+
+// Journal Page
+router.get('/journal', ensureAuthenticated, (req, res) => {
+    res.render('pages/journal', {
+        title: 'My Journal',
+        page: 'journal',
+        user: req.session.user
+    });
+});
+
+// Profile Page
+router.get('/profile', ensureAuthenticated, (req, res) => {
+    res.render('pages/profile', {
+        title: 'My Profile',
+        page: 'profile',
+        user: req.session.user
+    });
+});
+
+// Daily Drill Page
+router.get('/daily-drill', ensureAuthenticated, (req, res) => {
+    res.render('pages/daily-drill', {
+        title: 'Daily Training',
+        page: 'Drill',
+        user: req.session.user
+    });
+});
+
+// Community Wall
+router.get('/community/shared-worlds', ensureAuthenticated, (req, res) => {
+    res.render('pages/shared-worlds', {
+        title: 'Shared Worlds Wall',
+        page: 'shared-worlds',
+        user: req.session.user
+    });
+});
+
+// Third Thing Playground
+router.get('/playground/third-thing', ensureAuthenticated, (req, res) => {
+    res.render('pages/third-thing', {
+        title: 'Third Thing Generator',
+        page: 'playground',
+        user: req.session.user
+    });
+});
+
+module.exports = router;

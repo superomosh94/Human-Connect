@@ -1,0 +1,256 @@
+<%- include('../partials/header') %>
+
+    <div class="container simulator-container">
+        <div class="header-section mb-4">
+            <h2>World Builder <span class="highlight">Simulator</span></h2>
+            <p class="text-muted">Practice building shared worlds with SARA, your AI coach. Choose an option or write
+                your
+                own.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card settings-card">
+                    <h4 class="mb-3">Config</h4>
+                    <div class="form-group">
+                        <label>Scenario Context</label>
+                        <select id="sim-context" class="form-control">
+                            <option value="Coffee Shop Encounter (Stranger)">Coffee Shop Encounter</option>
+                            <option value="Networking Event (Professional)">Networking Event</option>
+                            <option value="First Date (Casual)">First Date</option>
+                            <option value="Stuck in Elevator (Awkward)">Stuck in Elevator</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Practice Mode</label>
+                        <select id="sim-mode" class="form-control">
+                            <option value="Shared Reality">Shared Reality (Goal)</option>
+                            <option value="Discovery">Discovery (Observation)</option>
+                            <option value="Interrogation">Interrogation (Avoid this)</option>
+                        </select>
+                    </div>
+                    <button id="reset-sim" class="btn btn-outline w-100 mt-3">Reset Simulation</button>
+                    <button id="share-sim" class="btn btn-primary w-100 mt-2" style="display: none;">Share to Community
+                        Wall</button>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="chat-interface feature-card">
+                    <div id="chat-history" class="chat-history mb-3">
+                        <div class="ai-message message-bubble">
+                            <strong>SARA (Context: Coffee Shop):</strong>
+                            <p>You're standing at the counter. The person next to you just ordered a "triple-shot
+                                vanilla oat latte with extra foam." They look exhausted but weirdly happy about it.</p>
+                            <p><em class="text-gold">What do you say?</em></p>
+                        </div>
+                    </div>
+
+                    <div id="mcq-options" class="mcq-container mb-3" style="display: none;">
+                        <!-- MCQ buttons will be injected here -->
+                    </div>
+
+                    <div class="chat-input-area">
+                        <textarea id="user-input" class="form-control mb-2" rows="2"
+                            placeholder="Type your response or pick an option above..."></textarea>
+                        <button id="send-btn" class="btn btn-primary w-100">Send Response <i
+                                class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const resetBtn = document.getElementById('reset-sim');
+        const contextSelect = document.getElementById('sim-context');
+        const modeSelect = document.getElementById('sim-mode');
+        const mcqContainer = document.getElementById('mcq-options');
+
+        const shareBtn = document.getElementById('share-sim');
+        let currentTranscript = [];
+
+        // Helper to append messages
+        function appendMessage(role, text, feedback = null, options = null) {
+            // Track for sharing
+            currentTranscript.push({ role, content: text });
+            if (currentTranscript.length > 2) shareBtn.style.display = 'block';
+
+            const div = document.createElement('div');
+            div.className = role === 'user' ? 'user-message message-bubble' : 'ai-message message-bubble';
+
+            if (feedback) {
+                const feedbackTag = document.createElement('span');
+                feedbackTag.className = 'feedback-tag text-gold';
+                feedbackTag.innerHTML = '<i class="fa-solid fa-graduation-cap"></i> Coach Feedback: ' + feedback;
+                div.appendChild(feedbackTag);
+            }
+
+            const strong = document.createElement('strong');
+            strong.textContent = role === 'user' ? 'You:' : 'SARA:';
+            div.appendChild(strong);
+
+            const p = document.createElement('div');
+            p.innerHTML = text.replace(/\n/g, '<br>');
+            div.appendChild(p);
+
+            chatHistory.appendChild(div);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            if (options && role === 'ai') {
+                renderMCQ(options);
+            }
+        }
+
+        async function fetchHistory() {
+            try {
+                const response = await fetch('/api/simulate/history');
+                const data = await response.json();
+                if (data.success && data.history.length > 0) {
+                    chatHistory.innerHTML = '';
+                    data.history.forEach((msg, index) => {
+                        const isLast = index === data.history.length - 1;
+                        appendMessage(msg.role, msg.content, msg.feedback, isLast ? msg.options : null);
+                    });
+                }
+            } catch (err) {
+                console.error('History fetch error:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchHistory);
+
+        function renderMCQ(options) {
+            mcqContainer.innerHTML = '';
+            if (!options || options.length === 0) {
+                mcqContainer.style.display = 'none';
+                return;
+            }
+
+            const opts = typeof options === 'string' ? JSON.parse(options) : options;
+
+            opts.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'mcq-option';
+                btn.textContent = option;
+                btn.onclick = () => {
+                    userInput.value = option;
+                    sendMessage();
+                };
+                mcqContainer.appendChild(btn);
+            });
+            mcqContainer.style.display = 'flex';
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMessage('user', text);
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            mcqContainer.style.display = 'none';
+            sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SARA is thinking...';
+
+            try {
+                const context = contextSelect.value;
+                const mode = modeSelect.value;
+
+                const response = await fetch('/api/simulate/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: text, context, mode })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    appendMessage('ai', data.response, data.feedback, data.options);
+                } else {
+                    appendMessage('ai', 'Error: ' + (data.error || 'Something went wrong.'));
+                }
+
+            } catch (err) {
+                console.error(err);
+                appendMessage('ai', 'Error connecting to AI coach.');
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = 'Send Response <i class="fa-solid fa-paper-plane"></i>';
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        resetBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to reset the simulation? This will clear history.')) return;
+
+            try {
+                await fetch('/api/simulate/reset', { method: 'POST' });
+                chatHistory.innerHTML = `
+                <div class="ai-message message-bubble">
+                    <strong>SARA (Context: ${contextSelect.value}):</strong>
+                    <p>Simulation reset. Ready when you are!</p>
+                </div>
+            `;
+                mcqContainer.style.display = 'none';
+            } catch (err) {
+                console.error('Reset error:', err);
+            }
+        });
+
+        shareBtn.addEventListener('click', async () => {
+            if (currentTranscript.length < 2) return;
+
+            shareBtn.disabled = true;
+            shareBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sharing...';
+
+            try {
+                const response = await fetch('/api/shared-worlds/share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scenario_context: contextSelect.value,
+                        transcript: currentTranscript,
+                        final_score: 3 // Default or calculate average if score exists
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Successfully shared to the Community Wall!');
+                    shareBtn.innerHTML = '<i class="fa-solid fa-check"></i> Shared!';
+                } else {
+                    alert('Error sharing: ' + data.error);
+                    shareBtn.disabled = false;
+                    shareBtn.innerHTML = 'Share to Community Wall';
+                }
+            } catch (err) {
+                console.error('Share error:', err);
+                alert('Connection error.');
+                shareBtn.disabled = false;
+                shareBtn.innerHTML = 'Share to Community Wall';
+            }
+        });
+    </script>
+
+    <style>
+        .text-gold {
+            color: var(--accent) !important;
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

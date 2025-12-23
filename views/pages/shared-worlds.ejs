@@ -1,0 +1,83 @@
+<%- include('../partials/header') %>
+
+    <div class="container dashboard-container" style="padding: 60px 0;">
+        <div class="dashboard-header text-center mb-5">
+            <h2 class="hero-title">Shared Worlds <span class="highlight text-gold">Wall</span></h2>
+            <p class="card-desc">Draw inspiration from the co-created worlds built by our community.</p>
+        </div>
+
+        <div id="worlds-feed" class="row">
+            <!-- Feed items will be injected here -->
+            <div class="col-12 text-center" id="feed-loading">
+                <i class="fa-solid fa-spinner fa-spin fa-2x text-gold"></i>
+                <p class="mt-2">Loading the collective imagination...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/shared-worlds/feed');
+                const data = await response.json();
+                const feedContainer = document.getElementById('worlds-feed');
+
+                if (data.success && data.worlds.length > 0) {
+                    feedContainer.innerHTML = data.worlds.map(world => {
+                        const transcript = JSON.parse(world.transcript);
+                        return `
+                <div class="col-md-6 mb-4">
+                    <div class="feature-card h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h4 class="highlight mb-0">${world.scenario_context || 'Co-Created World'}</h4>
+                            <span class="badge badge-primary" style="background: rgba(245, 158, 11, 0.2); color: var(--accent);">Score: ${world.final_score}/4</span>
+                        </div>
+                        <div class="shared-transcript mb-3">
+                            ${transcript.slice(-4).map(msg => `
+                                <div class="mb-2">
+                                    <strong class="${msg.role === 'ai' ? 'text-secondary' : 'text-primary'}">
+                                        ${msg.role === 'ai' ? 'SARA' : (world.username || 'Traveler')}:
+                                    </strong>
+                                    <span class="text-light opacity-75">${msg.content}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="small text-muted"><i class="fa-solid fa-user-astronaut mr-1"></i> By ${world.username || 'Anonymous Traveler'}</span>
+                            <span class="small text-muted">${new Date(world.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+                    }).join('');
+                } else {
+                    feedContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No worlds shared yet. Be the first!</p></div>';
+                }
+            } catch (err) {
+                console.error('Feed error:', err);
+                document.getElementById('worlds-feed').innerHTML = '<p class="text-danger text-center">Failed to load the wall.</p>';
+            }
+        });
+    </script>
+
+    <style>
+        /* Custom scrollbar for transcripts */
+        .shared-transcript::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .shared-transcript::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .shared-transcript::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .text-gold {
+            color: var(--accent);
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

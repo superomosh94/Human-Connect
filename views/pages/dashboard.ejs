@@ -1,0 +1,345 @@
+<script>
+    document.getElementById('q-log-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await fetch('/api/journal/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: document.getElementById('q-title').value,
+                content: document.getElementById('q-content').value,
+                world_type: document.getElementById('q-type').value,
+                connection_score: 5,
+                quick_log: true
+            })
+        });
+        location.reload();
+    });
+</script>
+<%- include('../partials/header') %>
+
+    <div class="container dashboard-container" style="padding: 40px 0;">
+        <!-- Welcome Section with Leveling -->
+        <div class="row mb-5">
+            <div class="col-md-8">
+                <h2 class="mb-1">Welcome back, <span class="highlight">
+                        <%= user.username %>
+                    </span>!</h2>
+                <p class="text-muted">You are consistently building shared reality. Keep it up!</p>
+            </div>
+            <div class="col-md-4">
+                <div class="level-profile mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="level-label text-primary" style="font-weight: 700; font-size: 1.1rem;">Level <%=
+                                user.level %></span>
+                        <small class="text-muted">
+                            <%= user.xp_points %> XP Total
+                        </small>
+                    </div>
+                    <div class="progress progress-thin">
+                        <div class="progress-bar progress-bar-glow" role="progressbar"
+                            style="width:<%= (user.xp_points % 500) / 5 %>%;"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Log Card -->
+                <div class="feature-card"
+                    style="border: 1px solid var(--primary); background: rgba(139, 92, 246, 0.05);">
+                    <h5 class="mb-3">Quick <span class="highlight">Log</span></h5>
+                    <form id="q-log-form">
+                        <input type="text" id="q-title" class="form-control mb-2 bg-dark text-light border-secondary"
+                            placeholder="Title" required>
+                        <select id="q-type" class="form-control mb-2 bg-dark text-light border-secondary">
+                            <option value="other">Other</option>
+                        </select>
+                        <textarea id="q-content" class="form-control mb-2 bg-dark text-light border-secondary"
+                            placeholder="What happened?" rows="2"></textarea>
+                        <button type="submit" class="btn btn-primary w-100 btn-sm">Save (+20 XP)</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Weekly Challenge Section -->
+            <div id="weekly-challenge-container" class="row mb-5" style="display: none;">
+                <div class="col-12">
+                    <div class="feature-card challenge-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0"><i class="fa-solid fa-trophy text-gold mr-2"></i> Weekly <span
+                                    class="highlight">Mission</span></h4>
+                            <span id="challenge-reward" class="badge badge-primary">150 XP</span>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 id="challenge-title" class="mb-1">Shared Reality Explorer</h5>
+                                <p id="challenge-desc" class="text-muted small mb-3">Complete 3 simulations with SARA
+                                    this week.</p>
+                                <div class="progress progress-thin mb-2">
+                                    <div id="challenge-progress-bar" class="progress-bar progress-bar-glow"
+                                        style="width: 0%;"></div>
+                                </div>
+                                <small id="challenge-stats" class="text-muted">0 / 3 turns completed</small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div id="challenge-status-icon">
+                                    <i class="fa-solid fa-rocket fa-4x text-muted opacity-25"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="row mb-5">
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <div class="stat-icon mb-2"><i class="fa-solid fa-fire text-orange"></i></div>
+                        <h3 class="mb-0">
+                            <%= user.streak_days || 0 %>
+                        </h3>
+                        <small class="text-muted text-uppercase">Day Streak</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <div class="stat-icon mb-2"><i class="fa-solid fa-calendar-check text-blue"></i></div>
+                        <h3 class="mb-0">
+                            <%= stats.drills %>
+                        </h3>
+                        <small class="text-muted text-uppercase">Drills Done</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <div class="stat-icon mb-2"><i class="fa-solid fa-book text-green"></i></div>
+                        <h3 class="mb-0">
+                            <%= stats.journal %>
+                        </h3>
+                        <small class="text-muted text-uppercase">Reflections</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <div class="stat-icon mb-2"><i class="fa-solid fa-trophy text-gold"></i></div>
+                        <h3 class="mb-0">
+                            <%= stats.achievements %>
+                        </h3>
+                        <small class="text-muted text-uppercase">Badges Earned</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Charts Section -->
+            <div class="row mb-5">
+                <div class="col-md-8">
+                    <div class="feature-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">Connection <span class="highlight">Trends</span></h4>
+                            <select id="chart-timeframe" class="form-control-sm bg-dark border-secondary text-light">
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                            </select>
+                        </div>
+                        <canvas id="connectionChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <h4 class="mb-4">Tool <span class="highlight">Mastery</span></h4>
+                        <div id="tool-mastery-list">
+                            <p class="text-muted text-center py-5">Complete simulations to see your mastery stars!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Section -->
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="mb-4">Achievement <span class="highlight">Gallery</span></h3>
+                    <div id="achievements-gallery" class="row">
+                        <div class="col-md-12 text-center text-muted py-5">
+                            <i class="fa-solid fa-lock fa-3x mb-3" style="opacity: 0.2;"></i>
+                            <p>Earn your first badge to unlock the gallery!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const ctx = document.getElementById('connectionChart').getContext('2d');
+
+                try {
+                    // Fetch Challenge Data
+                    const challengeRes = await fetch('/api/challenges/active');
+                    const challengeData = await challengeRes.json();
+
+                    if (challengeData.success && challengeData.challenge) {
+                        const c = challengeData.challenge;
+                        const p = challengeData.userProgress;
+
+                        document.getElementById('weekly-challenge-container').style.display = 'block';
+                        document.getElementById('challenge-title').textContent = c.title;
+                        document.getElementById('challenge-desc').textContent = c.description;
+                        document.getElementById('challenge-reward').textContent = `+${c.xp_reward} XP`;
+
+                        const percent = Math.min(100, (p.current_progress / c.goal_count) * 100);
+                        document.getElementById('challenge-progress-bar').style.width = percent + '%';
+                        document.getElementById('challenge-stats').textContent = `${p.current_progress} / ${c.goal_count} ${c.goal_type === 'simulation' ? 'turns' : c.goal_type + 's'} completed`;
+
+                        if (p.is_completed) {
+                            document.getElementById('challenge-status-icon').innerHTML = '<i class="fa-solid fa-circle-check fa-4x text-success"></i>';
+                        }
+                    }
+
+                    const response = await fetch('/api/analytics/progress');
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Initialize Connection Trend Chart
+                        const labels = data.simScores.map(d => new Date(d.date).toLocaleDateString());
+                        const scores = data.simScores.map(d => d.avg_score);
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Shared Reality Score',
+                                    data: scores,
+                                    borderColor: '#8B5CF6',
+                                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 5,
+                                    pointBackgroundColor: '#8B5CF6'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 4,
+                                        grid: { color: 'rgba(255,255,255,0.05)' }
+                                    },
+                                    x: {
+                                        grid: { display: false }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false }
+                                }
+                            }
+                        });
+
+                        // Initialize Tool Mastery
+                        if (data.toolUsage.length > 0) {
+                            const masteryContainer = document.getElementById('tool-mastery-list');
+                            masteryContainer.innerHTML = data.toolUsage.map(tool => `
+                        <div class="mastery-item mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>${tool.tool_name}</span>
+                                <span class="text-primary">${'★'.repeat(Math.min(5, Math.ceil(tool.usage_count / 5)))}${'☆'.repeat(5 - Math.min(5, Math.ceil(tool.usage_count / 5)))}</span>
+                            </div>
+                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.05);">
+                                <div class="progress-bar bg-primary" style="width: ${Math.min(100, (tool.usage_count / 25) * 100)}%;"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                        }
+
+                        // Initialize Achievements
+                        if (data.earnedAchievements.length > 0) {
+                            const gallery = document.getElementById('achievements-gallery');
+                            gallery.innerHTML = data.earnedAchievements.map(a => `
+                        <div class="col-md-3 mb-4">
+                            <div class="feature-card text-center achievement-card active">
+                                <i class="fa-solid ${a.icon} fa-2x mb-2 text-gold"></i>
+                                <h5>${a.name}</h5>
+                                <p class="small text-muted mb-0">${a.description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading dashboard charts:', err);
+                }
+            });
+        </script>
+
+        <style>
+            .level-badge-container {
+                display: inline-block;
+                min-width: 200px;
+            }
+
+            .level-label {
+                font-weight: 700;
+                font-size: 1.2rem;
+                color: var(--primary);
+            }
+
+            .stat-icon {
+                font-size: 1.5rem;
+            }
+
+            .text-orange {
+                color: #F97316;
+            }
+
+            .text-blue {
+                color: var(--secondary);
+            }
+
+            .text-green {
+                color: var(--success);
+            }
+
+            .text-gold {
+                color: var(--accent);
+            }
+
+            .achievement-card {
+                border: 2px solid transparent;
+                transition: all 0.3s;
+                opacity: 0.5;
+                filter: grayscale(1);
+            }
+
+            .achievement-card.active {
+                border-color: var(--primary);
+                opacity: 1;
+                filter: grayscale(0);
+                box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
+            }
+
+            .floating-log-btn {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                font-size: 1.5rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                transition: transform 0.2s;
+            }
+
+            .floating-log-btn:hover {
+                transform: scale(1.1);
+            }
+        </style>
+
+        <%- include('../partials/footer') %>

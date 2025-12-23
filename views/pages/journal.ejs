@@ -1,0 +1,152 @@
+<%- include('../partials/header') %>
+
+    <div class="container journal-container" style="padding: 40px 0;">
+        <div class="header-section mb-4">
+            <h2>Connection <span class="highlight">Journal</span></h2>
+            <p class="text-muted">Document your Shared Reality experiences and track your growth.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="feature-card">
+                    <h4 class="mb-3">New Entry</h4>
+                    <form id="journal-form">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="entry-title" class="form-control" placeholder="e.g., Coffee Shop Win"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>World Type</label>
+                            <select id="world-type" class="form-control">
+                                <option value="memory_palace">Memory Palace (Past)</option>
+                                <option value="parallel_universe">Parallel Universe (Present)</option>
+                                <option value="meaning_lab">Meaning Lab (Deep)</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Connection Score (1-10)</label>
+                            <input type="number" id="connection-score" class="form-control" min="1" max="10" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label>What happened?</label>
+                            <textarea id="entry-content" class="form-control" rows="5"
+                                placeholder="Describe the co-created world..." required></textarea>
+                        </div>
+                        <button type="submit" id="save-btn" class="btn btn-primary w-100">Save Experience <i
+                                class="fa-solid fa-floppy-disk text-gold"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <h4 class="mb-3">Recent Entries</h4>
+                <div id="entries-list" class="entries-list">
+                    <!-- Entries will be loaded here -->
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x mb-3 text-gold"></i>
+                        <p>Loading your connection history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const journalForm = document.getElementById('journal-form');
+        const entriesList = document.getElementById('entries-list');
+        const saveBtn = document.getElementById('save-btn');
+
+        async function fetchEntries() {
+            try {
+                const response = await fetch('/api/journal/entries');
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.entries.length === 0) {
+                        entriesList.innerHTML = '<div class="feature-card text-center text-muted">No entries yet. Start co-creating!</div>';
+                        return;
+                    }
+
+                    entriesList.innerHTML = data.entries.map(entry => `
+                    <div class="feature-card mb-3 entry-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5>${entry.title}</h5>
+                            <span class="badge badge-primary">${entry.world_type.replace('_', ' ')}</span>
+                        </div>
+                        <p class="mt-2" style="white-space: pre-wrap;">${entry.content}</p>
+                        <div class="d-flex justify-content-between mt-3 text-muted" style="font-size: 0.85rem;">
+                            <span>Score: <strong class="text-gold">${entry.connection_score}/10</strong></span>
+                            <span>${new Date(entry.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+                }
+            } catch (err) {
+                console.error('Error fetching entries:', err);
+                entriesList.innerHTML = '<div class="alert alert-danger">Failed to load entries.</div>';
+            }
+        }
+
+        journalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('entry-title').value;
+            const world_type = document.getElementById('world-type').value;
+            const connection_score = document.getElementById('connection-score').value;
+            const content = document.getElementById('entry-content').value;
+
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+            try {
+                const response = await fetch('/api/journal/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, world_type, connection_score, content })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    journalForm.reset();
+                    fetchEntries();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                console.error('Save error:', err);
+                alert('Failed to save journal entry.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = 'Save Experience <i class="fa-solid fa-floppy-disk text-gold"></i>';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', fetchEntries);
+    </script>
+
+    <style>
+        .entry-card {
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .entry-card:hover {
+            transform: scale(1.02);
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: capitalize;
+            font-size: 0.75rem;
+        }
+
+        .text-gold {
+            color: var(--accent);
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

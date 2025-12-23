@@ -1,0 +1,180 @@
+<%- include('../partials/header') %>
+
+    <div class="container drill-page" style="padding: 40px 0;">
+        <div class="header-section text-center mb-5">
+            <h2>Daily <span class="highlight">Training</span></h2>
+            <p class="text-muted">Master the Art of Shared Reality, one day at a time.</p>
+        </div>
+
+        <div class="row">
+            <!-- Main Drill of the Day -->
+            <div class="col-md-8 offset-md-2 mb-5">
+                <div id="active-drill-container">
+                    <div class="feature-card text-center py-5">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x mb-3 text-gold"></i>
+                        <p>Loading today's mission...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drill Library Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="mb-4 text-center">Practice <span class="highlight">Gallery</span></h3>
+                <p class="text-muted text-center mb-5">Browse other techniques to sharpen your skills anytime.</p>
+                <div id="drill-gallery" class="row">
+                    <!-- Randomized/All drills will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const activeContainer = document.getElementById('active-drill-container');
+        const galleryContainer = document.getElementById('drill-gallery');
+
+        async function loadDailyDrill() {
+            try {
+                const res = await fetch('/api/drills/today');
+                const data = await res.json();
+
+                if (data.success) {
+                    const drill = data.drill;
+                    const isCompleted = data.completed;
+
+                    activeContainer.innerHTML = `
+                    <div class="feature-card drill-card main-mission ${isCompleted ? 'completed' : ''}">
+                        <div class="drill-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge mb-2">Today's Focus</span>
+                                <h3>${drill.tool_name}</h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="difficulty-dots">
+                                    ${'●'.repeat(drill.difficulty_level)}${'○'.repeat(5 - drill.difficulty_level)}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="drill-content mt-4">
+                            <h5><i class="fa-solid fa-crosshairs text-gold"></i> Mission Brief</h5>
+                            <p>${drill.description}</p>
+                            
+                            <div class="example-box mt-3 p-3">
+                                <strong>Formula:</strong> <code>${drill.formula}</code><br><br>
+                                <strong>Example:</strong> <em class="text-muted">"${drill.example}"</em>
+                            </div>
+                        </div>
+
+                        ${isCompleted ? `
+                            <div class="mt-4 alert alert-success text-center">
+                                <i class="fa-solid fa-circle-check"></i> MISSION COMPLETED (+50 XP)
+                            </div>
+                        ` : `
+                            <form id="drill-complete-form" class="mt-4">
+                                <hr style="border-color: var(--border); margin: 20px 0;">
+                                <h5>Log Your Practice</h5>
+                                <textarea id="drill-notes" class="form-control mb-3" placeholder="I used this today by saying..." required></textarea>
+                                <button type="submit" class="btn btn-primary w-100">Complete Drill</button>
+                            </form>
+                        `}
+                    </div>
+                `;
+
+                    if (!isCompleted) {
+                        document.getElementById('drill-complete-form').onsubmit = async (e) => {
+                            e.preventDefault();
+                            const notes = document.getElementById('drill-notes').value;
+                            const completeRes = await fetch('/api/drills/complete', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ drillId: drill.id, notes })
+                            });
+                            const completeData = await completeRes.json();
+                            if (completeData.success) {
+                                loadDailyDrill();
+                            }
+                        };
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                activeContainer.innerHTML = '<div class="alert alert-danger">Failed to load mission.</div>';
+            }
+        }
+
+        async function loadGallery() {
+            try {
+                const res = await fetch('/api/drills/all');
+                const data = await res.json();
+
+                if (data.success) {
+                    // Shuffle for "random" feel besides the main one
+                    const drills = data.drills.sort(() => Math.random() - 0.5);
+
+                    galleryContainer.innerHTML = drills.map(d => `
+                    <div class="col-md-4 mb-4">
+                        <div class="feature-card drill-card h-100" style="font-size: 0.9rem;">
+                            <span class="badge mb-2 d-inline-block">${d.tool_type.replace('_', ' ')}</span>
+                            <h5>${d.tool_name}</h5>
+                            <p class="text-muted mt-2">${d.description.substring(0, 100)}...</p>
+                            <div class="mt-auto pt-3 border-top" style="border-color: var(--border) !important;">
+                                <code style="font-size: 0.8rem;">${d.formula}</code>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDailyDrill();
+            loadGallery();
+        });
+    </script>
+
+    <style>
+        .drill-card {
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .main-mission {
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.15);
+        }
+
+        .main-mission.completed {
+            border-color: var(--success);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+        }
+
+        .difficulty-dots {
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .example-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px dashed var(--border);
+        }
+
+        .badge {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .text-gold {
+            color: var(--accent);
+        }
+    </style>
+
+    <%- include('../partials/footer') %>
