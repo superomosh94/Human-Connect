@@ -28,6 +28,22 @@
                     .catch(err => console.log('SW Registration Failed', err));
             });
         }
+
+        // Fetch Notifications Count
+        async function updateNotifBadge() {
+            try {
+                const response = await fetch('/api/notifications/unread-count');
+                const data = await response.json();
+                if (data.success && data.count > 0) {
+                    const badge = document.getElementById('notif-badge');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'block';
+                    }
+                }
+            } catch (err) { console.error('Notif error:', err); }
+        }
+        document.addEventListener('DOMContentLoaded', updateNotifBadge);
     </script>
 </head>
 
@@ -68,7 +84,19 @@
                         </li>
                         <li class="user-menu">
                             <span class="username">Hello, <%= user.username %></span>
-                            <a href="/logout" class="btn btn-sm btn-outline">Logout</a>
+                            <% if (user.is_admin) { %>
+                                <a href="/admin/dashboard" class="nav-link" title="Admin Control"><i
+                                        class="fa-solid fa-user-shield text-gold"></i></a>
+                                <% } %>
+                                    <a href="/notifications" class="nav-link position-relative" title="Notifications">
+                                        <i class="fa-solid fa-bell"></i>
+                                        <span id="notif-badge" class="badge badge-error"
+                                            style="display: none; position: absolute; top: -5px; right: -5px; font-size: 0.6rem; padding: 2px 5px; border-radius: 50%; background: var(--error);"></span>
+                                    </a>
+                                    <a href="/settings" class="nav-link" title="Settings"><i
+                                            class="fa-solid fa-cog"></i></a>
+                                    <a href="/logout" class="btn btn-sm btn-outline"
+                                        style="border: 1px solid rgba(255,255,255,0.2); padding: 5px 15px;">Logout</a>
                         </li>
                         <% } else { %>
                             <li><a href="/login"

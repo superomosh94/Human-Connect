@@ -1,29 +1,29 @@
 <%- include('../partials/header') %>
 
-    <div class="container simulator-container">
-        <div class="header-section mb-4">
+    <div class="container simulator-container reveal">
+        <div class="header-section mb-4 reveal-delay-1">
             <h2>World Builder <span class="highlight">Simulator</span></h2>
             <p class="text-muted">Practice building shared worlds with SARA, your AI coach. Choose an option or write
                 your
                 own.</p>
         </div>
 
-        <div class="row">
+        <div class="row reveal-delay-2">
             <div class="col-md-4">
                 <div class="feature-card settings-card">
                     <h4 class="mb-3">Config</h4>
-                    <div class="form-group">
-                        <label>Scenario Context</label>
-                        <select id="sim-context" class="form-control">
+                    <div class="form-group mb-3">
+                        <label class="small text-muted mb-1">Scenario Context</label>
+                        <select id="sim-context" class="form-control bg-dark border-secondary text-light">
                             <option value="Coffee Shop Encounter (Stranger)">Coffee Shop Encounter</option>
                             <option value="Networking Event (Professional)">Networking Event</option>
                             <option value="First Date (Casual)">First Date</option>
                             <option value="Stuck in Elevator (Awkward)">Stuck in Elevator</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Practice Mode</label>
-                        <select id="sim-mode" class="form-control">
+                    <div class="form-group mb-4">
+                        <label class="small text-muted mb-1">Practice Mode</label>
+                        <select id="sim-mode" class="form-control bg-dark border-secondary text-light">
                             <option value="Shared Reality">Shared Reality (Goal)</option>
                             <option value="Discovery">Discovery (Observation)</option>
                             <option value="Interrogation">Interrogation (Avoid this)</option>
@@ -46,14 +46,22 @@
                         </div>
                     </div>
 
+                    <!-- Typing Indicator -->
+                    <div id="typing-indicator" class="ai-message message-bubble mb-3"
+                        style="display: none; width: fit-content; padding: 10px 20px;">
+                        <span class="typing-dots">
+                            <span>.</span><span>.</span><span>.</span>
+                        </span>
+                    </div>
+
                     <div id="mcq-options" class="mcq-container mb-3" style="display: none;">
                         <!-- MCQ buttons will be injected here -->
                     </div>
 
                     <div class="chat-input-area">
-                        <textarea id="user-input" class="form-control mb-2" rows="2"
+                        <textarea id="user-input" class="form-control mb-2 bg-dark border-secondary text-light" rows="2"
                             placeholder="Type your response or pick an option above..."></textarea>
-                        <button id="send-btn" class="btn btn-primary w-100">Send Response <i
+                        <button id="send-btn" class="btn btn-primary w-100 font-weight-bold">Broadcast Perspective <i
                                 class="fa-solid fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -151,9 +159,10 @@
 
             appendMessage('user', text);
             userInput.value = '';
-            userInput.disabled = true;
-            sendBtn.disabled = true;
-            mcqContainer.style.display = 'none';
+            const typingIndicator = document.getElementById('typing-indicator');
+            typingIndicator.style.display = 'block';
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
             sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SARA is thinking...';
 
             try {
@@ -169,6 +178,7 @@
                 });
 
                 const data = await response.json();
+                typingIndicator.style.display = 'none';
 
                 if (data.success) {
                     appendMessage('ai', data.response, data.feedback, data.options);
@@ -182,7 +192,7 @@
             } finally {
                 userInput.disabled = false;
                 sendBtn.disabled = false;
-                sendBtn.innerHTML = 'Send Response <i class="fa-solid fa-paper-plane"></i>';
+                sendBtn.innerHTML = 'Broadcast Perspective <i class="fa-solid fa-paper-plane"></i>';
                 userInput.focus();
             }
         }
@@ -250,6 +260,35 @@
     <style>
         .text-gold {
             color: var(--accent) !important;
+        }
+
+        .typing-dots span {
+            animation: typing 1.4s infinite;
+            font-size: 1.5rem;
+            display: inline-block;
+            margin: 0 2px;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
         }
     </style>
 

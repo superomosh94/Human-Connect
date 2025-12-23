@@ -1,0 +1,175 @@
+<%- include('../partials/header') %>
+
+    <div class="container settings-container reveal" style="padding: 40px 0;">
+        <div class="header-section mb-4 reveal-delay-1" style="max-width: 800px;">
+            <h2 class="mb-4 text-center">User <span class="highlight">Settings</span></h2>
+
+            <div class="row">
+                <!-- Sidebar Navigation -->
+                <div class="col-md-4 mb-4">
+                    <div class="list-group list-group-flush bg-card border rounded overflow-hidden">
+                        <button class="list-group-item list-group-item-action bg-card text-light active border-0"
+                            onclick="switchTab('profile')">
+                            <i class="fa-solid fa-user-gear mr-2"></i> Edit Profile
+                        </button>
+                        <button class="list-group-item list-group-item-action bg-card text-light border-0"
+                            onclick="switchTab('security')">
+                            <i class="fa-solid fa-shield-halved mr-2"></i> Security
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="col-md-8">
+                    <div class="feature-card">
+                        <!-- Profile Section -->
+                        <div id="profile-section" class="settings-tab">
+                            <form id="profile-form">
+                                <div class="text-center mb-4">
+                                    <img src="<%= user.avatar_url %>" id="avatar-preview" class="rounded-circle mb-2"
+                                        style="width: 100px; height: 100px; object-fit: cover; border: 2px solid var(--primary);">
+                                    <div class="mt-2">
+                                        <label for="avatar-url-input" class="small text-muted cursor-pointer">Avatar
+                                            URL</label>
+                                        <input type="text" id="avatar-url-input"
+                                            class="form-control form-control-sm bg-dark border-secondary text-light"
+                                            value="<%= user.avatar_url %>" placeholder="https://example.com/image.jpg">
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="small text-muted">Username</label>
+                                    <input type="text" name="username"
+                                        class="form-control bg-dark border-secondary text-light"
+                                        value="<%= user.username %>" required>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label class="small text-muted">Bio</label>
+                                    <textarea name="bio" class="form-control bg-dark border-secondary text-light"
+                                        rows="3" placeholder="Tell us about yourself..."><%= user.bio %></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                            </form>
+                        </div>
+
+                        <!-- Security Section -->
+                        <div id="security-section" class="settings-tab" style="display: none;">
+                            <form id="security-form">
+                                <div class="form-group mb-3">
+                                    <label class="small text-muted">Current Password</label>
+                                    <input type="password" name="currentPassword"
+                                        class="form-control bg-dark border-secondary text-light" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="small text-muted">New Password</label>
+                                    <input type="password" name="newPassword"
+                                        class="form-control bg-dark border-secondary text-light" required minlength="6">
+                                </div>
+                                <div class="form-group mb-4">
+                                    <label class="small text-muted">Confirm New Password</label>
+                                    <input type="password" name="confirmPassword"
+                                        class="form-control bg-dark border-secondary text-light" required minlength="6">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.settings-tab').forEach(tab => tab.style.display = 'none');
+            document.getElementById(tabName + '-section').style.display = 'block';
+
+            document.querySelectorAll('.list-group-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.innerText.toLowerCase().includes(tabName)) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Profile Update
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                bio: formData.get('bio'),
+                avatar_url: document.getElementById('avatar-url-input').value
+            };
+
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Profile updated successfully!');
+                    location.reload();
+                } else {
+                    alert(result.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to update profile.');
+            }
+        });
+
+        // Password Update
+        document.getElementById('security-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmPassword = formData.get('confirmPassword');
+
+            if (newPassword !== confirmPassword) {
+                return alert('New passwords do not match!');
+            }
+
+            try {
+                const response = await fetch('/api/user/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Password updated successfully!');
+                    e.target.reset();
+                } else {
+                    alert(result.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to update password.');
+            }
+        });
+
+        // Avatar Preview
+        document.getElementById('avatar-url-input').addEventListener('input', (e) => {
+            const preview = document.getElementById('avatar-preview');
+            preview.src = e.target.value || '/img/default-avatar.svg';
+        });
+    </script>
+
+    <style>
+        .list-group-item.active {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

@@ -2,6 +2,9 @@ const db = require('../database/config');
 
 exports.getProgressData = async (req, res) => {
     try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({ error: 'Not authenticated' });
+        }
         const userId = req.session.user.id;
 
         // 1. Fetch simulation scores over time

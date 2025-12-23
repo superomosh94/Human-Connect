@@ -2,15 +2,13 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
-// Register Routes
+// Export authLimiter for use in app.js
 router.get('/register', authController.getRegister);
-router.post('/auth/register', authController.postRegister);
+router.post('/register', authController.postRegister);
 
-// Login Routes
 router.get('/login', authController.getLogin);
-router.post('/auth/login', authController.postLogin);
+router.post('/login', authController.postLogin);
 
-// Logout
 router.get('/logout', authController.logout);
 
 module.exports = router;

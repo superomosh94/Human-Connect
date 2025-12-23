@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
 
-    <div class="container dashboard-container" style="padding: 60px 0;">
-        <div class="dashboard-header text-center mb-5">
+    <div class="container community-container reveal" style="padding: 40px 0;">
+        <div class="header-section text-center mb-5 reveal-delay-1">
             <h2 class="hero-title">Shared Worlds <span class="highlight text-gold">Wall</span></h2>
             <p class="card-desc">Draw inspiration from the co-created worlds built by our community.</p>
         </div>
@@ -25,26 +25,47 @@
                 if (data.success && data.worlds.length > 0) {
                     feedContainer.innerHTML = data.worlds.map(world => {
                         const transcript = JSON.parse(world.transcript);
+                        const isLiked = world.user_liked > 0;
                         return `
                 <div class="col-md-6 mb-4">
-                    <div class="feature-card h-100">
+                    <div class="feature-card h-100 d-flex flex-column" data-world-id="${world.id}">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h4 class="highlight mb-0">${world.scenario_context || 'Co-Created World'}</h4>
+                            <div>
+                                <h4 class="highlight mb-0">${world.scenario_context || 'Co-Created World'}</h4>
+                                <span class="small text-muted">By ${world.username || 'Anonymous'}</span>
+                            </div>
                             <span class="badge badge-primary" style="background: rgba(245, 158, 11, 0.2); color: var(--accent);">Score: ${world.final_score}/4</span>
                         </div>
-                        <div class="shared-transcript mb-3">
+                        
+                        <div class="shared-transcript mb-3 flex-grow-1">
                             ${transcript.slice(-4).map(msg => `
                                 <div class="mb-2">
-                                    <strong class="${msg.role === 'ai' ? 'text-secondary' : 'text-primary'}">
+                                    <strong class="${msg.role === 'ai' ? 'text-secondary' : 'text-primary'}" style="font-size: 0.85rem;">
                                         ${msg.role === 'ai' ? 'SARA' : (world.username || 'Traveler')}:
                                     </strong>
-                                    <span class="text-light opacity-75">${msg.content}</span>
+                                    <p class="text-light opacity-75 mb-0" style="font-size: 0.9rem;">${msg.content}</p>
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="small text-muted"><i class="fa-solid fa-user-astronaut mr-1"></i> By ${world.username || 'Anonymous Traveler'}</span>
-                            <span class="small text-muted">${new Date(world.created_at).toLocaleDateString()}</span>
+
+                        <div class="card-actions d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                            <button class="btn-action like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike(${world.id}, this)">
+                                <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 
+                                <span class="count">${world.like_count}</span>
+                            </button>
+                            <button class="btn-action comment-btn" onclick="toggleComments(${world.id})">
+                                <i class="fa-regular fa-comment"></i> 
+                                <span class="count">${world.comment_count}</span>
+                            </button>
+                            <span class="small text-muted ml-auto">${new Date(world.created_at).toLocaleDateString()}</span>
+                        </div>
+
+                        <div id="comments-${world.id}" class="comments-section mt-3" style="display:none;">
+                            <div class="comments-list mb-3" id="list-${world.id}"></div>
+                            <div class="comment-input-group d-flex gap-2">
+                                <input type="text" placeholder="Add a comment..." class="form-control form-control-sm" id="input-${world.id}">
+                                <button class="btn btn-primary btn-sm" onclick="sendComment(${world.id})">Post</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -60,23 +81,114 @@
         });
     </script>
 
+    async function toggleLike(worldId, btn) {
+    try {
+    const response = await fetch('/api/shared-worlds/like', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ worldId })
+    });
+    const data = await response.json();
+    if (data.success) {
+    const icon = btn.querySelector('i');
+    const count = btn.querySelector('.count');
+    if (data.liked) {
+    icon.className = 'fa-solid fa-heart';
+    btn.classList.add('active');
+    count.textContent = parseInt(count.textContent) + 1;
+    } else {
+    icon.className = 'fa-regular fa-heart';
+    btn.classList.remove('active');
+    count.textContent = parseInt(count.textContent) - 1;
+    }
+    }
+    } catch (err) { console.error(err); }
+    }
+
+    async function toggleComments(worldId) {
+    const section = document.getElementById(`comments-${worldId}`);
+    if (section.style.display === 'none') {
+    section.style.display = 'block';
+    loadComments(worldId);
+    } else {
+    section.style.display = 'none';
+    }
+    }
+
+    async function loadComments(worldId) {
+    const list = document.getElementById(`list-${worldId}`);
+    list.innerHTML = '<small class="text-muted">Loading comments...</small>';
+    try {
+    const response = await fetch(`/api/shared-worlds/${worldId}/comments`);
+    const data = await response.json();
+    if (data.success) {
+    if (data.comments.length === 0) {
+    list.innerHTML = '<small class="text-muted">No comments yet.</small>';
+    } else {
+    list.innerHTML = data.comments.map(c => `
+    <div class="mb-2 p-2 rounded bg-dark border-left border-primary" style="font-size: 0.85rem;">
+        <strong>${c.username}:</strong> ${c.content}
+    </div>
+    `).join('');
+    }
+    }
+    } catch (err) { list.innerHTML = 'Error loading comments.'; }
+    }
+
+    async function sendComment(worldId) {
+    const input = document.getElementById(`input-${worldId}`);
+    const content = input.value.trim();
+    if (!content) return;
+
+    try {
+    const response = await fetch('/api/shared-worlds/comment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ worldId, content })
+    });
+    const data = await response.json();
+    if (data.success) {
+    input.value = '';
+    loadComments(worldId);
+    }
+    } catch (err) { console.error(err); }
+    }
+    </script>
+
     <style>
+        .btn-action {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            color: var(--text-main);
+        }
+
+        .btn-action.active {
+            color: var(--error);
+        }
+
+        .btn-action.active i {
+            color: var(--error);
+        }
+
+        .comments-section {
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
         /* Custom scrollbar for transcripts */
-        .shared-transcript::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .shared-transcript::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .shared-transcript::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-
-        .text-gold {
-            color: var(--accent);
+        .shared-transcript {
+            max-height: 200px;
+            overflow-y: auto;
         }
     </style>
 

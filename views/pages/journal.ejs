@@ -1,46 +1,47 @@
 <%- include('../partials/header') %>
 
-    <div class="container journal-container" style="padding: 40px 0;">
+    <div class="container journal-container reveal" style="padding: 40px 0;">
         <div class="header-section mb-4">
             <h2>Connection <span class="highlight">Journal</span></h2>
             <p class="text-muted">Document your Shared Reality experiences and track your growth.</p>
         </div>
 
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-5 reveal-delay-1">
                 <div class="feature-card">
-                    <h4 class="mb-3">New Entry</h4>
+                    <h4 class="mb-4">Log a <span class="highlight">Sync</span></h4>
                     <form id="journal-form">
-                        <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" id="entry-title" class="form-control" placeholder="e.g., Coffee Shop Win"
-                                required>
+                        <div class="form-group mb-3">
+                            <label class="small text-muted mb-1">Perspective Title</label>
+                            <input type="text" id="entry-title" class="form-control bg-dark border-secondary text-light"
+                                placeholder="e.g., Coffee Shop Win" required>
                         </div>
-                        <div class="form-group">
-                            <label>World Type</label>
-                            <select id="world-type" class="form-control">
+                        <div class="form-group mb-3">
+                            <label class="small text-muted mb-1">Reality Plane</label>
+                            <select id="world-type" class="form-control bg-dark border-secondary text-light">
                                 <option value="memory_palace">Memory Palace (Past)</option>
                                 <option value="parallel_universe">Parallel Universe (Present)</option>
                                 <option value="meaning_lab">Meaning Lab (Deep)</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Connection Score (1-10)</label>
-                            <input type="number" id="connection-score" class="form-control" min="1" max="10" value="5">
+                        <div class="form-group mb-3">
+                            <label class="small text-muted mb-1">Co-Creation Score (1-10)</label>
+                            <input type="number" id="connection-score"
+                                class="form-control bg-dark border-secondary text-light" min="1" max="10" value="5">
                         </div>
-                        <div class="form-group">
-                            <label>What happened?</label>
-                            <textarea id="entry-content" class="form-control" rows="5"
-                                placeholder="Describe the co-created world..." required></textarea>
+                        <div class="form-group mb-4">
+                            <label class="small text-muted mb-1">Insight Content</label>
+                            <textarea id="entry-content" class="form-control bg-dark border-secondary text-light"
+                                rows="5" placeholder="Describe the co-created world..." required></textarea>
                         </div>
-                        <button type="submit" id="save-btn" class="btn btn-primary w-100">Save Experience <i
-                                class="fa-solid fa-floppy-disk text-gold"></i></button>
+                        <button type="submit" id="save-btn" class="btn btn-primary w-100">Preserve Memory (+20
+                            XP)</button>
                     </form>
                 </div>
             </div>
 
-            <div class="col-md-7">
+            <div class="col-md-7 reveal-delay-2">
                 <h4 class="mb-3">Recent Entries</h4>
                 <div id="entries-list" class="entries-list">
                     <!-- Entries will be loaded here -->
@@ -119,7 +120,7 @@
                 alert('Failed to save journal entry.');
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerHTML = 'Save Experience <i class="fa-solid fa-floppy-disk text-gold"></i>';
+                saveBtn.innerHTML = 'Preserve Memory (+20 XP)';
             }
         });
 

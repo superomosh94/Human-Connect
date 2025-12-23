@@ -1,25 +1,27 @@
 <%- include('../partials/header') %> <!-- Login Page -->
 
-    <div class="container auth-container">
-        <div class="feature-card auth-card">
-            <h2 class="text-center mb-3">Welcome <span class="highlight text-gold">Back</span></h2>
+    <div class="container auth-container reveal" style="max-width: 450px; padding-top: 80px;">
+        <div class="feature-card auth-card reveal-delay-1">
+            <h2 class="text-center mb-4">Welcome <span class="highlight">Back</span></h2>
 
-            <form action="/auth/login" method="POST">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required class="form-control">
+            <form action="/login" method="POST">
+                <div class="form-group mb-3">
+                    <label class="small text-muted mb-1">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                        class="form-control bg-dark border-secondary text-light">
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required class="form-control">
+                <div class="form-group mb-4">
+                    <label class="small text-muted mb-1">Security Key</label>
+                    <input type="password" id="password" name="password" required
+                        class="form-control bg-dark border-secondary text-light">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-primary w-100 py-3 font-weight-bold">Enter Portal</button>
             </form>
 
-            <p class="text-center mt-3 text-muted">
-                Need an account? <a href="/register" class="highlight">Register</a>
+            <p class="text-center mt-4 text-muted small">
+                New to the reality? <a href="/register" class="highlight">Sync Now</a>
             </p>
         </div>
     </div>

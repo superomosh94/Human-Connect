@@ -1,30 +1,33 @@
 <%- include('../partials/header') %> <!-- Register Page -->
 
-    <div class="container auth-container">
-        <div class="feature-card auth-card">
-            <h2 class="text-center mb-3">Start Your <span class="highlight text-gold">Journey</span></h2>
+    <div class="container auth-container reveal" style="max-width: 450px; padding-top: 60px;">
+        <div class="feature-card auth-card reveal-delay-1">
+            <h2 class="text-center mb-4">Join the <span class="highlight">Network</span></h2>
 
-            <form action="/auth/register" method="POST">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required class="form-control">
+            <form action="/register" method="POST">
+                <div class="form-group mb-3">
+                    <label class="small text-muted mb-1">Architect Name</label>
+                    <input type="text" id="username" name="username" required
+                        class="form-control bg-dark border-secondary text-light">
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required class="form-control">
+                <div class="form-group mb-3">
+                    <label class="small text-muted mb-1">Digital Coordinates (Email)</label>
+                    <input type="email" id="email" name="email" required
+                        class="form-control bg-dark border-secondary text-light">
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required class="form-control">
+                <div class="form-group mb-4">
+                    <label class="small text-muted mb-1">Access Cipher (Password)</label>
+                    <input type="password" id="password" name="password" required
+                        class="form-control bg-dark border-secondary text-light">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                <button type="submit" class="btn btn-primary w-100 py-3 font-weight-bold">Initiate Sync</button>
             </form>
 
-            <p class="text-center mt-3 text-muted">
-                Already have an account? <a href="/login" class="highlight">Login</a>
+            <p class="text-center mt-4 text-muted small">
+                Already synced? <a href="/login" class="highlight">Re-enter Portal</a>
             </p>
         </div>
     </div>

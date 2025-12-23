@@ -22,14 +22,20 @@ exports.shareSimulation = async (req, res) => {
 
 exports.getSharedWorlds = async (req, res) => {
     try {
-        // Fetch shared worlds with join to get usernames (optional, could be anonymous)
-        const [worlds] = await db.query(`
-            SELECT sw.*, u.username 
+        const currentUserId = req.session.user ? req.session.user.id : 0;
+        const worlds = await db.query(`
+            SELECT 
+                sw.*, 
+                u.username,
+                u.avatar_url,
+                (SELECT COUNT(*) FROM likes WHERE world_id = sw.id) as like_count,
+                (SELECT COUNT(*) FROM likes WHERE world_id = sw.id AND user_id = ?) as user_liked,
+                (SELECT COUNT(*) FROM comments WHERE world_id = sw.id) as comment_count
             FROM shared_worlds sw
             LEFT JOIN users u ON sw.user_id = u.id
             ORDER BY sw.created_at DESC
             LIMIT 50
-        `);
+        `, [currentUserId]);
 
         res.json({ success: true, worlds });
     } catch (error) {

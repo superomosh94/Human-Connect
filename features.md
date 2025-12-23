@@ -33,11 +33,30 @@ This document lists all features currently implemented and functional in the **H
     - **Achievement Gallery**: Earnable badges (e.g., "First Co-Creation", "Master Observer") displayed on the dashboard.
 - **Leveling Engine**: Automated progression system (Level 1, 2, 3...) based on XP accumulation from all app activities.
 
-## 6. Technical Stack
+## 6. Social Community Wall
+- **Shared World Feed**: Browse publicly shared AI simulations from other travelers.
+- **Engagement Tools**: Like and comment on shared worlds to build community and provide feedback.
+- **Anonymity & Ownership**: Users can see authors or stay anonymous, with real-time like/comment counts.
+
+## 7. User Settings & Security
+- **Profile Customization**: Update username, bio, and avatar URL for personalized presence.
+- **Advanced Security**: Secure password update functionality with length validation.
+
+## 8. Admin Control Panel
+- **System Metrics**: Real-time overview of total users, shared worlds, and daily active counts.
+- **Content Moderation**: Capacity to delete inappropriate shared worlds.
+- **User Monitoring**: Track the latest travelers joining the system.
+
+## 9. Notification Hub
+- **Activity Alerts**: Instant notifications for likes and comments on your shared content.
+- **Unread Tracking**: Visual bell badge in the header with unread count.
+- **Activity Feed**: Dedicated notifications page to track all community interactions.
+
+## 10. Technical Stack
 - **Backend**: Node.js, Express.
 - **Frontend**: EJS (Embedded JavaScript), Vanilla CSS (Premium Dark Theme), Chart.js.
-- **Database**: MySQL (Robust schema with 9+ interacting tables).
-- **Integrations**: Groq AI API, FontAwesome 6.
+- **Database**: MySQL (Robust schema with 12+ interacting tables).
+- **Integrations**: Groq AI API, FontAwesome 6, Bcryptjs.
 
 ---
-*Last updated: December 23, 2025*
+*Last updated: December 23, 2025* (Post-Missing Features Update)

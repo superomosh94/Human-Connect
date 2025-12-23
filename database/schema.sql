@@ -13,7 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
   level INT DEFAULT 1,
   xp_points INT DEFAULT 0,
   streak_days INT DEFAULT 0,
-  last_login TIMESTAMP
+  last_login TIMESTAMP,
+  avatar_url VARCHAR(255) DEFAULT '/img/default-avatar.svg',
+  bio TEXT,
+  is_admin BOOLEAN DEFAULT FALSE
 );
 
 -- Daily drills table
@@ -165,3 +168,37 @@ INSERT INTO conversation_tools (tool_name, tool_type, description, formula, exam
 ('Shared Confusion', 'non_question', 'Express a shared state of not knowing.', 'I''m a bit lost on [X]... are you?', 'I''m a bit lost on how this line works... are you as confused as I am?', 1),
 ('Perspective Swap', 'technique', 'Look at something from a different angle.', 'To [X], this must look like [Y].', 'To that barista, we probably look like NPCs in a very slow video game.', 3),
 ('Co-Created Story', 'world_builder', 'Start a narrative that they can finish.', 'Once upon a time [X]... and then?', 'Once upon a time, this cafe was actually a spaceship, and then...?', 3);
+
+-- Social Features: Likes table
+CREATE TABLE IF NOT EXISTS likes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    world_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (world_id) REFERENCES shared_worlds(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_like (user_id, world_id)
+);
+
+-- Social Features: Comments table
+CREATE TABLE IF NOT EXISTS comments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    world_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (world_id) REFERENCES shared_worlds(id) ON DELETE CASCADE
+);
+
+-- Notifications table
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    type ENUM('like', 'comment', 'system', 'drill') NOT NULL,
+    content TEXT NOT NULL,
+    link VARCHAR(255),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
