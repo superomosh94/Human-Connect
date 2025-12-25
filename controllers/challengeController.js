@@ -2,13 +2,10 @@ const db = require('../database/config');
 
 exports.getActiveChallenge = async (req, res) => {
     try {
-        if (!req.session || !req.session.user) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
         const userId = req.session.user.id;
 
         // Find current active challenge
-        const challenges = await db.query(
+        const [challenges] = await db.query(
             'SELECT * FROM challenges WHERE is_active = TRUE AND CURDATE() BETWEEN start_date AND end_date LIMIT 1'
         );
 
@@ -19,7 +16,7 @@ exports.getActiveChallenge = async (req, res) => {
         const challenge = challenges[0];
 
         // Get user progress
-        const progress = await db.query(
+        const [progress] = await db.query(
             'SELECT * FROM user_challenges WHERE user_id = ? AND challenge_id = ?',
             [userId, challenge.id]
         );
@@ -36,7 +33,7 @@ exports.getActiveChallenge = async (req, res) => {
 // Internal utility to update progress
 exports.updateChallengeProgress = async (userId, type) => {
     try {
-        const challenges = await db.query(
+        const [challenges] = await db.query(
             'SELECT * FROM challenges WHERE is_active = TRUE AND goal_type = ? AND CURDATE() BETWEEN start_date AND end_date LIMIT 1',
             [type]
         );
@@ -46,7 +43,7 @@ exports.updateChallengeProgress = async (userId, type) => {
         const challenge = challenges[0];
 
         // Get existing progress
-        const progress = await db.query(
+        const [progress] = await db.query(
             'SELECT * FROM user_challenges WHERE user_id = ? AND challenge_id = ?',
             [userId, challenge.id]
         );

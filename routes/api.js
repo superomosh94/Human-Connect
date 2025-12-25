@@ -1,50 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAuthenticatedAPI } = require('../middleware/auth');
 const simulationController = require('../controllers/simulationController');
 
-router.post('/simulate/chat', ensureAuthenticatedAPI, simulationController.getSimulationResponse);
-router.get('/simulate/history', ensureAuthenticatedAPI, simulationController.getSimulationHistory);
-router.post('/simulate/reset', ensureAuthenticatedAPI, simulationController.resetSimulation);
+// Ensure auth middleware is applied in app.js or here
+function ensureAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next();
+    }
+    res.status(401).json({ error: 'Unauthorized' });
+}
+
+router.post('/simulate/chat', ensureAuthenticated, simulationController.getSimulationResponse);
+router.get('/simulate/history', ensureAuthenticated, simulationController.getSimulationHistory);
+router.post('/simulate/reset', ensureAuthenticated, simulationController.resetSimulation);
 
 const journalController = require('../controllers/journalController');
-router.post('/journal/save', ensureAuthenticatedAPI, journalController.saveEntry);
-router.get('/journal/entries', ensureAuthenticatedAPI, journalController.getEntries);
+router.post('/journal/save', ensureAuthenticated, journalController.saveEntry);
+router.get('/journal/entries', ensureAuthenticated, journalController.getEntries);
 
 const drillController = require('../controllers/drillController');
-router.get('/drills/today', ensureAuthenticatedAPI, drillController.getDailyDrill);
-router.get('/drills/all', ensureAuthenticatedAPI, drillController.getAllDrills);
-router.post('/drills/complete', ensureAuthenticatedAPI, drillController.completeDrill);
+router.get('/drills/today', ensureAuthenticated, drillController.getDailyDrill);
+router.get('/drills/all', ensureAuthenticated, drillController.getAllDrills);
+router.post('/drills/complete', ensureAuthenticated, drillController.completeDrill);
 
 const analyticsController = require('../controllers/analyticsController');
 const sharedWorldsController = require('../controllers/sharedWorldsController');
 const challengeController = require('../controllers/challengeController');
 const thirdThingController = require('../controllers/thirdThingController');
 
-router.get('/analytics/progress', ensureAuthenticatedAPI, analyticsController.getProgressData);
+router.get('/analytics/progress', ensureAuthenticated, analyticsController.getProgressData);
 
 // Shared Worlds Wall
-router.get('/shared-worlds/feed', ensureAuthenticatedAPI, sharedWorldsController.getSharedWorlds);
-router.post('/shared-worlds/share', ensureAuthenticatedAPI, sharedWorldsController.shareSimulation);
+router.get('/shared-worlds/feed', ensureAuthenticated, sharedWorldsController.getSharedWorlds);
+router.post('/shared-worlds/share', ensureAuthenticated, sharedWorldsController.shareSimulation);
 
 // Challenges
-router.get('/challenges/active', ensureAuthenticatedAPI, challengeController.getActiveChallenge);
+router.get('/challenges/active', ensureAuthenticated, challengeController.getActiveChallenge);
 
 // Third Thing Generator
-router.post('/third-thing/generate', ensureAuthenticatedAPI, thirdThingController.generateStarters);
-
-const notificationController = require('../controllers/notificationController');
-router.get('/notifications', ensureAuthenticatedAPI, notificationController.getNotifications);
-router.get('/notifications/unread-count', ensureAuthenticatedAPI, notificationController.getUnreadCount);
-router.put('/notifications/:id/read', ensureAuthenticatedAPI, notificationController.markAsRead);
-
-const socialController = require('../controllers/socialController');
-router.post('/shared-worlds/like', ensureAuthenticatedAPI, socialController.toggleLike);
-router.post('/shared-worlds/comment', ensureAuthenticatedAPI, socialController.addComment);
-router.get('/shared-worlds/:worldId/comments', ensureAuthenticatedAPI, socialController.getComments);
+router.post('/third-thing/generate', ensureAuthenticated, thirdThingController.generateStarters);
 
 const userController = require('../controllers/userController');
-router.put('/user/profile', ensureAuthenticatedAPI, userController.updateProfile);
-router.put('/user/password', ensureAuthenticatedAPI, userController.updatePassword);
+router.put('/user/profile', ensureAuthenticated, userController.updateProfile);
+router.put('/user/password', ensureAuthenticated, userController.updatePassword);
 
 module.exports = router;

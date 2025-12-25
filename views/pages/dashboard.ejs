@@ -1,99 +1,70 @@
 <%- include('../partials/header') %>
 
-    <div class="container dashboard-container reveal" style="padding: 40px 0;">
-        <!-- Command Center Header -->
-        <div class="row mb-5 reveal-delay-1 align-items-center">
-            <div class="col-md-7">
-                <h1 class="display-4 font-weight-bold mb-2">Welcome back, <span class="highlight">
+    <div class="container dashboard-container">
+        <!-- Welcome Section with Leveling -->
+        <div class="row mb-5">
+            <div class="col-md-8">
+                <h2 class="mb-1">Welcome back, <span class="highlight">
                         <%= user.username %>
-                    </span>!</h1>
-                <p class="lead text-muted">Your Shared Reality signal is stronger than ever. Ready to co-create?</p>
+                    </span>!</h2>
+                <p class="text-muted">You are consistently building shared reality. Keep it up!</p>
             </div>
-            <div class="col-md-5">
-                <div class="feature-card level-card"
-                    style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(14, 165, 233, 0.1));">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <span class="text-uppercase small tracking-widest text-muted">Current standing</span>
-                            <h2 class="mb-0">Level <%= user.level %> <span class="text-primary small">Architect</span>
-                            </h2>
-                        </div>
-                        <div class="xp-badge">
-                            <span class="badge badge-primary p-2 px-3 badge-pill">
-                                <%= user.xp_points %> XP
-                            </span>
-                        </div>
-                    </div>
-                    <div class="progress progress-thin mb-2">
-                        <div class="progress-bar progress-bar-glow" role="progressbar"
-                            style="--progress-width: <%= (user.xp_points % 500) / 5 %>%; width: var(--progress-width);">
-                        </div>
-                    </div>
-                    <small class="text-muted">
-                        <%= 500 - (user.xp_points % 500) %> XP until next mastery level
-                    </small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions & Mission Row -->
-        <div class="row mb-5 reveal-delay-2">
             <div class="col-md-4">
-                <div class="feature-card h-100" style="border-left: 4px solid var(--primary);">
-                    <h4 class="mb-4"><i class="fa-solid fa-bolt-lightning text-primary mr-2"></i> Quick <span
-                            class="highlight">Sync</span></h4>
+                <div class="level-profile mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="level-label text-primary" style="font-weight: 700; font-size: 1.1rem;">Level <%=
+                                user.level %></span>
+                        <small class="text-muted">
+                            <%= user.xp_points %> XP Total
+                        </small>
+                    </div>
+                    <div class="progress progress-thin">
+                        <div class="progress-bar progress-bar-glow" role="progressbar"
+                            style="width:<%= (user.xp_points % 500) / 5 %>%;"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Log Card -->
+                <div class="feature-card"
+                    style="border: 1px solid var(--primary); background: rgba(139, 92, 246, 0.05);">
+                    <h5 class="mb-3">Quick <span class="highlight">Log</span></h5>
                     <form id="q-log-form">
-                        <div class="form-group mb-3">
-                            <label class="small text-muted mb-1">Perspective Title</label>
-                            <input type="text" id="q-title" class="form-control bg-dark border-secondary text-light"
-                                placeholder="e.g. Morning Coffee Talk" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label class="small text-muted mb-1">Reality Plane</label>
-                            <select id="q-type" class="form-control bg-dark border-secondary text-light">
-                                <option value="memory_palace">Memory Palace</option>
-                                <option value="meaning_lab">Meaning Lab</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="small text-muted mb-1">Insight Content</label>
-                            <textarea id="q-content" class="form-control bg-dark border-secondary text-light"
-                                placeholder="What shared world was built?" rows="2"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Broadcast Sync (+20 XP)</button>
+                        <input type="text" id="q-title" class="form-control mb-2 bg-dark text-light border-secondary"
+                            placeholder="Title" required>
+                        <select id="q-type" class="form-control mb-2 bg-dark text-light border-secondary">
+                            <option value="other">Other</option>
+                        </select>
+                        <textarea id="q-content" class="form-control mb-2 bg-dark text-light border-secondary"
+                            placeholder="What happened?" rows="2"></textarea>
+                        <button type="submit" class="btn btn-primary w-100 btn-sm">Save (+20 XP)</button>
                     </form>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-8">
-                <div id="weekly-challenge-container" class="feature-card h-100 challenge-card"
-                    style="display: none; background: url('/img/grid-overlay.png'); background-size: cover; border: 1px solid var(--gold);">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="mb-0"><i class="fa-solid fa-meteor text-gold mr-2"></i> Active <span
-                                class="highlight">Bounty</span></h3>
-                        <span id="challenge-reward" class="badge badge-gold p-2 px-3"
-                            style="background: var(--accent); color: var(--bg-dark); font-weight: 800;">150 XP</span>
+        <!-- Weekly Challenge Section -->
+        <div id="weekly-challenge-container" class="row mb-5" style="display: none;">
+            <div class="col-12">
+                <div class="feature-card challenge-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0"><i class="fa-solid fa-trophy text-gold mr-2"></i> Weekly <span
+                                class="highlight">Mission</span></h4>
+                        <span id="challenge-reward" class="badge badge-primary">150 XP</span>
                     </div>
                     <div class="row align-items-center">
-                        <div class="col-md-7">
-                            <h4 id="challenge-title" class="mb-2">Shared Reality Explorer</h4>
-                            <p id="challenge-desc" class="text-muted mb-4 lead">Complete 3 simulations with SARA to
-                                master
-                                the rhythm of co-creation.</p>
-                            <div class="progress mb-3"
-                                style="height: 12px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                        <div class="col-md-8">
+                            <h5 id="challenge-title" class="mb-1">Shared Reality Explorer</h5>
+                            <p id="challenge-desc" class="text-muted small mb-3">Complete 3 simulations with SARA
+                                this week.</p>
+                            <div class="progress progress-thin mb-2">
                                 <div id="challenge-progress-bar" class="progress-bar progress-bar-glow"
-                                    style="width: 0%; background: var(--accent);"></div>
+                                    style="width: 0%;"></div>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span id="challenge-stats" class="text-gold font-weight-bold">0 / 3 missions</span>
-                                <a href="/simulator" class="btn btn-sm btn-outline-light">Jump to Sim</a>
-                            </div>
+                            <small id="challenge-stats" class="text-muted">0 / 3 turns completed</small>
                         </div>
-                        <div class="col-md-5 text-center">
-                            <div id="challenge-status-icon" class="pulse-animation">
-                                <i class="fa-solid fa-satellite fa-5x text-gold opacity-50"></i>
+                        <div class="col-md-4 text-center">
+                            <div id="challenge-status-icon">
+                                <i class="fa-solid fa-rocket fa-4x text-muted opacity-25"></i>
                             </div>
                         </div>
                     </div>
@@ -101,42 +72,42 @@
             </div>
         </div>
 
-        <!-- Vital Signs Stats -->
-        <div class="row mb-5 reveal-delay-3">
+        <!-- Stats Overview Cards -->
+        <div class="row mb-5">
             <div class="col-md-3">
-                <div class="feature-card text-center border-orange">
-                    <div class="stat-icon mb-2"><i class="fa-solid fa-fire-flame-curved fa-2x text-orange"></i></div>
-                    <h2 class="mb-0 font-weight-bold">
+                <div class="feature-card text-center">
+                    <div class="stat-icon mb-2"><i class="fa-solid fa-fire text-orange"></i></div>
+                    <h3 class="mb-0">
                         <%= user.streak_days || 0 %>
-                    </h2>
-                    <small class="text-muted text-uppercase tracking-wider">Day Momentum</small>
+                    </h3>
+                    <small class="text-muted text-uppercase">Day Streak</small>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="feature-card text-center border-blue">
-                    <div class="stat-icon mb-2"><i class="fa-solid fa-brain fa-2x text-blue"></i></div>
-                    <h2 class="mb-0 font-weight-bold">
+                <div class="feature-card text-center">
+                    <div class="stat-icon mb-2"><i class="fa-solid fa-calendar-check text-blue"></i></div>
+                    <h3 class="mb-0">
                         <%= stats.drills %>
-                    </h2>
-                    <small class="text-muted text-uppercase tracking-wider">Neural Drills</small>
+                    </h3>
+                    <small class="text-muted text-uppercase">Drills Done</small>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="feature-card text-center border-green">
-                    <div class="stat-icon mb-2"><i class="fa-solid fa-feather-pointed fa-2x text-green"></i></div>
-                    <h2 class="mb-0 font-weight-bold">
+                <div class="feature-card text-center">
+                    <div class="stat-icon mb-2"><i class="fa-solid fa-book text-green"></i></div>
+                    <h3 class="mb-0">
                         <%= stats.journal %>
-                    </h2>
-                    <small class="text-muted text-uppercase tracking-wider">Stored Memories</small>
+                    </h3>
+                    <small class="text-muted text-uppercase">Reflections</small>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="feature-card text-center border-gold">
-                    <div class="stat-icon mb-2"><i class="fa-solid fa-medal fa-2x text-gold"></i></div>
-                    <h2 class="mb-0 font-weight-bold">
+                <div class="feature-card text-center">
+                    <div class="stat-icon mb-2"><i class="fa-solid fa-trophy text-gold"></i></div>
+                    <h3 class="mb-0">
                         <%= stats.achievements %>
-                    </h2>
-                    <small class="text-muted text-uppercase tracking-wider">Sync Badges</small>
+                    </h3>
+                    <small class="text-muted text-uppercase">Badges Earned</small>
                 </div>
             </div>
         </div>
@@ -152,9 +123,7 @@
                             <option value="30d">Last 30 Days</option>
                         </select>
                     </div>
-                </div>
-                <div style="height: 250px; position: relative;">
-                    <canvas id="connectionChart"></canvas>
+                    <canvas id="connectionChart" height="250"></canvas>
                 </div>
             </div>
             <div class="col-md-4">
@@ -181,55 +150,34 @@
         </div>
     </div>
 
-
-
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Quick Log Form Handler
-            const qLogForm = document.getElementById('q-log-form');
-            if (qLogForm) {
-                qLogForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    try {
-                        const response = await fetch('/api/journal/save', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                title: document.getElementById('q-title').value,
-                                content: document.getElementById('q-content').value,
-                                world_type: document.getElementById('q-type').value,
-                                connection_score: 5,
-                                quick_log: true
-                            })
-                        });
+            const ctx = document.getElementById('connectionChart')?.getContext('2d');
+            if (!ctx) return;
 
-                        if (!response.ok) {
-                            throw new Error('Failed to save entry');
-                        }
-
-                        location.reload();
-                    } catch (error) {
-                        console.error('Quick log error:', error);
-                        alert('Failed to save entry. Please try again.');
-                    }
+            // Quick Log Form Listener
+            document.getElementById('q-log-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await fetch('/api/journal/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: document.getElementById('q-title').value,
+                        content: document.getElementById('q-content').value,
+                        world_type: document.getElementById('q-type').value,
+                        connection_score: 5,
+                        quick_log: true
+                    })
                 });
-            }
-
-            const ctx = document.getElementById('connectionChart');
-            if (!ctx) {
-                console.error('Chart canvas not found');
-                return;
-            }
+                location.reload();
+            });
 
             try {
                 // Fetch Challenge Data
                 const challengeRes = await fetch('/api/challenges/active');
-                if (!challengeRes.ok) {
-                    throw new Error('Failed to load challenge data');
-                }
                 const challengeData = await challengeRes.json();
 
                 if (challengeData.success && challengeData.challenge) {
@@ -251,9 +199,6 @@
                 }
 
                 const response = await fetch('/api/analytics/progress');
-                if (!response.ok) {
-                    throw new Error('Failed to load analytics data');
-                }
                 const data = await response.json();
 
                 if (data.success) {
@@ -261,7 +206,7 @@
                     const labels = data.simScores.map(d => new Date(d.date).toLocaleDateString());
                     const scores = data.simScores.map(d => d.avg_score);
 
-                    new Chart(ctx.getContext('2d'), {
+                    new Chart(ctx, {
                         type: 'line',
                         data: {
                             labels: labels,
@@ -278,7 +223,6 @@
                         },
                         options: {
                             responsive: true,
-                            maintainAspectRatio: false,
                             scales: {
                                 y: {
                                     beginAtZero: true,
@@ -299,105 +243,41 @@
                     if (data.toolUsage.length > 0) {
                         const masteryContainer = document.getElementById('tool-mastery-list');
                         masteryContainer.innerHTML = data.toolUsage.map(tool => `
-                        <div class="mastery-item mb-4">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>${tool.tool_name}</span>
-                                <span class="text-primary">${'★'.repeat(Math.min(5, Math.ceil(tool.usage_count / 5)))}${'☆'.repeat(5 - Math.min(5, Math.ceil(tool.usage_count / 5)))}</span>
-                            </div>
-                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.05);">
-                                <div class="progress-bar bg-primary" style="width: ${Math.min(100, (tool.usage_count / 25) * 100)}%;"></div>
-                            </div>
-                        </div>
-                    `).join('');
+                <div class="mastery-item mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>${tool.tool_name}</span>
+                        <span class="text-primary">${'★'.repeat(Math.min(5, Math.ceil(tool.usage_count / 5)))}${'☆'.repeat(5 - Math.min(5, Math.ceil(tool.usage_count / 5)))}</span>
+                    </div>
+                    <div class="progress" style="height: 4px; background: rgba(255,255,255,0.05);">
+                        <div class="progress-bar bg-primary" style="width: ${Math.min(100, (tool.usage_count / 25) * 100)}%;"></div>
+                    </div>
+                </div>
+            `).join('');
                     }
 
                     // Initialize Achievements
                     if (data.earnedAchievements.length > 0) {
                         const gallery = document.getElementById('achievements-gallery');
                         gallery.innerHTML = data.earnedAchievements.map(a => `
-                        <div class="col-md-3 mb-4">
-                            <div class="feature-card text-center achievement-card active">
-                                <i class="fa-solid ${a.icon} fa-2x mb-2 text-gold"></i>
-                                <h5>${a.name}</h5>
-                                <p class="small text-muted mb-0">${a.description}</p>
-                            </div>
-                        </div>
-                    `).join('');
+                <div class="col-md-3 mb-4">
+                    <div class="feature-card text-center achievement-card active">
+                        <i class="fa-solid ${a.icon} fa-2x mb-2 text-gold"></i>
+                        <h5>${a.name}</h5>
+                        <p class="small text-muted mb-0">${a.description}</p>
+                    </div>
+                </div>
+            `).join('');
                     }
                 }
             } catch (err) {
-                console.error('Error loading dashboard data:', err);
-                // Show user-friendly error message
-                const container = document.querySelector('.dashboard-container');
-                if (container) {
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-error mt-3';
-                    alertDiv.innerHTML = `
-                        <strong>⚠️ Failed to load dashboard data.</strong> 
-                        Please refresh the page or contact support if the issue persists.
-                    `;
-                    container.insertBefore(alertDiv, container.firstChild);
-                }
+                console.error('Error loading dashboard charts:', err);
             }
         });
     </script>
 
     <style>
-        .tracking-wider {
-            letter-spacing: 0.1em;
-        }
-
-        .tracking-widest {
-            letter-spacing: 0.2em;
-        }
-
-        .opacity-50 {
-            opacity: 0.5;
-        }
-
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-        }
-
-        .border-orange {
-            border-bottom: 3px solid #F97316 !important;
-        }
-
-        .border-blue {
-            border-bottom: 3px solid var(--secondary) !important;
-        }
-
-        .border-green {
-            border-bottom: 3px solid var(--success) !important;
-        }
-
-        .border-gold {
-            border-bottom: 3px solid var(--accent) !important;
-        }
-
-        .stat-icon i {
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover .stat-icon i {
-            transform: scale(1.2) rotate(10deg);
+        .stat-icon {
+            font-size: 1.5rem;
         }
 
         .text-orange {
@@ -428,26 +308,6 @@
             opacity: 1;
             filter: grayscale(0);
             box-shadow: 0 0 15px rgba(108, 92, 231, 0.2);
-        }
-
-        .floating-log-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: transform 0.2s;
-        }
-
-        .floating-log-btn:hover {
-            transform: scale(1.1);
         }
     </style>
 

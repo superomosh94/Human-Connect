@@ -28,9 +28,13 @@ router.get('/journal', ensureAuthenticated, (req, res) => {
     });
 });
 
-// Profile Page (Redirect to Settings)
+// Profile Page
 router.get('/profile', ensureAuthenticated, (req, res) => {
-    res.redirect('/settings');
+    res.render('pages/profile', {
+        title: 'My Profile',
+        page: 'profile',
+        user: req.session.user
+    });
 });
 
 // Daily Drill Page
@@ -58,16 +62,6 @@ router.get('/playground/third-thing', ensureAuthenticated, (req, res) => {
         page: 'playground',
         user: req.session.user
     });
-});
-
-const userController = require('../controllers/userController');
-
-// Settings Page
-router.get('/settings', ensureAuthenticated, userController.getSettings);
-
-// Notifications Page
-router.get('/notifications', ensureAuthenticated, (req, res) => {
-    res.render('pages/notifications', { title: 'Notifications', page: 'notifications', user: req.session.user });
 });
 
 module.exports = router;

@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { ensureAuthenticated } = require('../middleware/auth');
+
+// Middleware to ensure user is logged in
+function ensureAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next();
+    }
+    req.flash('error', 'Please login to view this page');
+    res.redirect('/login');
+}
+
 const db = require('../database/config');
 
 router.get('/', ensureAuthenticated, async (req, res) => {

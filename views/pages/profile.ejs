@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+    <div class="container dashboard-container" style="padding: 40px 0;">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card text-center mb-4">
+                    <div class="avatar-circle mx-auto mb-3"
+                        style="width: 100px; height: 100px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white;">
+                        <%= user.username.charAt(0).toUpperCase() %>
+                    </div>
+                    <h3>
+                        <%= user.username %>
+                    </h3>
+                    <p class="text-muted">
+                        <%= user.email || 'Member since ' + new Date().getFullYear() %>
+                    </p>
+                    <div class="badge badge-primary px-3 py-2">Level <%= user.level %> Explorer</div>
+                </div>
+
+                <div class="feature-card">
+                    <h5 class="mb-3">Global <span class="highlight">Stats</span></h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total XP</span>
+                        <span class="font-weight-bold">
+                            <%= user.xp_points %>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Streak</span>
+                        <span class="font-weight-bold">
+                            <%= user.streak_days || 0 %> Days
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="feature-card mb-4">
+                    <h4 class="mb-4">Account <span class="highlight">Information</span></h4>
+                    <form action="/api/profile/update" method="POST">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" value="<%= user.username %>" readonly>
+                            <small class="form-text text-muted">Username cannot be changed.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" class="form-control" name="email" value="<%= user.email || '' %>"
+                                placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" class="form-control" name="password"
+                                placeholder="Leave blank to keep current">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+
+                <div class="feature-card">
+                    <h4 class="mb-4">Recent <span class="highlight">Activity</span></h4>
+                    <div class="alert alert-info"
+                        style="background: rgba(14, 165, 233, 0.1); border: 1px solid var(--secondary); color: var(--secondary);">
+                        <i class="fa-solid fa-info-circle mr-2"></i> Your recent simulations and drills will appear here
+                        soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

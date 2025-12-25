@@ -1,0 +1,77 @@
+<%- include('../partials/header') %>
+
+    <div class="container dashboard-container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="mb-1">Tool <span class="highlight">Repository</span></h2>
+                <p class="text-muted">Configure conversation techniques and training exercises.</p>
+            </div>
+            <button class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Add New Tool
+            </button>
+        </div>
+
+        <div class="row">
+            <% tools.forEach(tool=> { %>
+                <div class="col-md-6 mb-4">
+                    <div class="feature-card h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge"
+                                style="background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 5px 12px; border: 1px solid var(--border);">
+                                <%= tool.tool_type.replace('_', ' ' ) %>
+                            </span>
+                            <div class="d-flex gap-2">
+                                <button class="icon-btn text-muted"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="icon-btn text-error"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <h4 class="mb-2">
+                            <%= tool.tool_name %>
+                        </h4>
+                        <p class="text-muted small mb-4">
+                            <%= tool.description %>
+                        </p>
+
+                        <div class="p-3 rounded bg-dark mb-3">
+                            <code class="text-primary font-weight-bold"><%= tool.formula %></code>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top"
+                            style="border-color: var(--border) !important;">
+                            <span class="small text-muted">Difficulty:
+                                <span class="text-gold">
+                                    <%= '●' .repeat(tool.difficulty_level) %>
+                                        <%= '○' .repeat(5 - tool.difficulty_level) %>
+                                </span>
+                            </span>
+                            <span class="small text-muted">Used: <strong class="text-main">24x</strong></span>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+
+    <style>
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .text-error {
+            color: var(--error);
+        }
+
+        .bg-dark {
+            background: rgba(0, 0, 0, 0.2) !important;
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

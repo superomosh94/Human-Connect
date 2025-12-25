@@ -1,0 +1,72 @@
+<div class="sidebar">
+    <div class="sidebar-header">
+        <a href="/dashboard" class="sidebar-logo">
+            <span class="logo-text">Human<span class="highlight">Connect</span></span>
+        </a>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul class="nav-links">
+            <li>
+                <a href="/dashboard" class="<%= page === 'dashboard' ? 'active' : '' %>">
+                    <i class="fa-solid fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <% if (user && user.role==='admin' ) { %>
+                <li>
+                    <a href="/admin/dashboard" class="<%= page.startsWith('admin') ? 'active' : '' %>"
+                        style="color: var(--accent);">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>Admin Panel</span>
+                    </a>
+                </li>
+                <% } %>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a href="/profile" class="<%= page === 'profile' ? 'active' : '' %>">
+                            <i class="fa-solid fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/community/shared-worlds" class="<%= page === 'shared-worlds' ? 'active' : '' %>">
+                            <i class="fa-solid fa-globe"></i>
+                            <span>Shared Worlds</span>
+                        </a>
+                    </li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        <a href="/daily-drill" class="<%= page === 'Drill' ? 'active' : '' %>">
+                            <i class="fa-solid fa-dumbbell"></i>
+                            <span>Daily Drill</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/simulator" class="<%= page === 'simulator' ? 'active' : '' %>">
+                            <i class="fa-solid fa-vr-cardboard"></i>
+                            <span>Simulator</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/journal" class="<%= page === 'journal' ? 'active' : '' %>">
+                            <i class="fa-solid fa-book"></i>
+                            <span>Journal</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/playground/third-thing" class="<%= page === 'playground' ? 'active' : '' %>">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Third Thing</span>
+                        </a>
+                    </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="/logout" class="logout-link">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</div>

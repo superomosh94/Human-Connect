@@ -8,7 +8,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'shared_reality',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 50 // Prevent unlimited queue growth
+  queueLimit: 0
 });
 
 // Helper function for queries
