@@ -16,7 +16,8 @@ exports.saveEntry = async (req, res) => {
             await db.query('UPDATE users SET xp_points = xp_points + 20 WHERE id = ?', [userId]);
 
             // Check for level up (500 XP per level)
-            const [user] = await db.query('SELECT xp_points, level FROM users WHERE id = ?', [userId]);
+            const userRows = await db.query('SELECT xp_points, level FROM users WHERE id = ?', [userId]);
+            const user = userRows[0];
             const newLevel = Math.floor(user.xp_points / 500) + 1;
             if (newLevel > user.level) {
                 await db.query('UPDATE users SET level = ? WHERE id = ?', [newLevel, userId]);

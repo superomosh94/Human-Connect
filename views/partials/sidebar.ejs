@@ -14,11 +14,33 @@
                 </a>
             </li>
             <% if (user && user.role==='admin' ) { %>
+                <li class="nav-divider"></li>
+                <li
+                    style="padding: 10px 20px; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+                    Administration</li>
                 <li>
-                    <a href="/admin/dashboard" class="<%= page.startsWith('admin') ? 'active' : '' %>"
+                    <a href="/admin/dashboard" class="<%= page === 'admin-dashboard' ? 'active' : '' %>"
                         style="color: var(--accent);">
                         <i class="fa-solid fa-gauge-high"></i>
-                        <span>Admin Panel</span>
+                        <span>Admin Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/users" class="<%= page === 'admin-users' ? 'active' : '' %>">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Manage Users</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/content" class="<%= page === 'admin-content' ? 'active' : '' %>">
+                        <i class="fa-solid fa-file-pen"></i>
+                        <span>Manage Content</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/challenges" class="<%= page === 'admin-challenges' ? 'active' : '' %>">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Manage Challenges</span>
                     </a>
                 </li>
                 <% } %>

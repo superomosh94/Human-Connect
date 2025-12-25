@@ -18,7 +18,10 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 
         // Fetch user data for level/xp
         const users = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
-        const user = users[0];
+        const user = {
+            ...users[0],
+            role: users[0].is_admin ? 'admin' : 'user'
+        };
 
         // Fetch counts
         const drillCount = await db.query('SELECT COUNT(*) as count FROM daily_drills WHERE user_id = ? AND completed = 1', [userId]);

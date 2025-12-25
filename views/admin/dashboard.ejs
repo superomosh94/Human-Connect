@@ -76,6 +76,42 @@
                 </div>
             </div>
             <div class="col-md-4">
+                <div class="feature-card mb-4">
+                    <h4 class="mb-4">Recent <span class="highlight">Activity</span></h4>
+                    <div class="activity-feed">
+                        <% if (recentActivity.length===0) { %>
+                            <p class="text-muted small">No recent activity detected.</p>
+                            <% } %>
+                                <% recentActivity.forEach(act=> { %>
+                                    <div class="activity-item mb-3 pb-3 border-bottom"
+                                        style="border-color: rgba(255,255,255,0.05) !important;">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span
+                                                class="badge <%= act.activity_type === 'Simulation' ? 'badge-primary' : 'badge-secondary' %>"
+                                                style="font-size: 0.65rem;">
+                                                <%= act.activity_type.toUpperCase() %>
+                                            </span>
+                                            <small class="text-muted">
+                                                <%= new Date(act.created_at).toLocaleTimeString([], {hour: '2-digit' ,
+                                                    minute:'2-digit'}) %>
+                                            </small>
+                                        </div>
+                                        <div class="small">
+                                            <strong class="text-main">
+                                                <%= act.username %>
+                                            </strong>
+                                            <span class="text-muted">
+                                                <%= act.activity_type==='Simulation' ? 'practiced simulation'
+                                                    : 'wrote in journal' %>:
+                                            </span>
+                                            <div class="text-truncate" title="<%= act.detail %>">
+                                                <%= act.detail %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                    </div>
+                </div>
                 <div class="feature-card h-100">
                     <h4 class="mb-4">System <span class="highlight">Actions</span></h4>
                     <div class="d-grid gap-3">

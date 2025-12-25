@@ -23,7 +23,7 @@ exports.shareSimulation = async (req, res) => {
 exports.getSharedWorlds = async (req, res) => {
     try {
         // Fetch shared worlds with join to get usernames (optional, could be anonymous)
-        const [worlds] = await db.query(`
+        const worlds = await db.query(`
             SELECT sw.*, u.username 
             FROM shared_worlds sw
             LEFT JOIN users u ON sw.user_id = u.id

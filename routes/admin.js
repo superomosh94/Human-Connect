@@ -20,4 +20,15 @@ router.get('/users', adminController.getUsers);
 router.get('/content', adminController.getContent);
 router.post('/users/update-role', adminController.updateUserRole);
 
+// Tool Management
+router.post('/content/tools', adminController.createTool);
+router.put('/content/tools', adminController.updateTool);
+router.delete('/content/tools/:id', adminController.deleteTool);
+
+// Challenge Management
+router.get('/challenges', adminController.getChallenges);
+router.post('/challenges', adminController.createChallenge);
+router.put('/challenges', adminController.updateChallenge);
+router.delete('/challenges/:id', adminController.deleteChallenge);
+
 module.exports = router;

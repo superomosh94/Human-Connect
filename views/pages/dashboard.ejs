@@ -112,42 +112,86 @@
             </div>
         </div>
 
-        <!-- Progress Charts Section -->
-        <div class="row mb-5">
-            <div class="col-md-8">
-                <div class="feature-card">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0">Connection <span class="highlight">Trends</span></h4>
-                        <select id="chart-timeframe" class="form-control-sm bg-dark border-secondary text-light">
-                            <option value="7d">Last 7 Days</option>
-                            <option value="30d">Last 30 Days</option>
-                        </select>
+        <% if (user && user.role==='admin' ) { %>
+            <!-- Admin Quick Access -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="feature-card"
+                        style="border: 1px solid var(--accent); background: rgba(255, 215, 0, 0.05);">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0"><i class="fa-solid fa-screwdriver-wrench text-gold mr-2"></i> Admin <span
+                                    class="highlight">Management</span></h4>
+                            <span class="badge badge-primary">Privileged Access</span>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <a href="/admin/dashboard"
+                                    class="btn btn-outline w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="fa-solid fa-gauge-high"></i> Control Center
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/admin/users"
+                                    class="btn btn-outline w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="fa-solid fa-users-gear"></i> Manage Users
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/admin/content"
+                                    class="btn btn-outline w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="fa-solid fa-file-pen"></i> Manage Content
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/admin/challenges"
+                                    class="btn btn-outline w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="fa-solid fa-trophy"></i> Challenges
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <canvas id="connectionChart" height="250"></canvas>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="feature-card h-100">
-                    <h4 class="mb-4">Tool <span class="highlight">Mastery</span></h4>
-                    <div id="tool-mastery-list">
-                        <p class="text-muted text-center py-5">Complete simulations to see your mastery stars!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <% } %>
 
-        <!-- Achievements Section -->
-        <div class="row">
-            <div class="col-12">
-                <h3 class="mb-4">Achievement <span class="highlight">Gallery</span></h3>
-                <div id="achievements-gallery" class="row">
-                    <div class="col-md-12 text-center text-muted py-5">
-                        <i class="fa-solid fa-lock fa-3x mb-3" style="opacity: 0.2;"></i>
-                        <p>Earn your first badge to unlock the gallery!</p>
+                <!-- Progress Charts Section -->
+                <div class="row mb-5">
+                    <div class="col-md-8">
+                        <div class="feature-card">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="mb-0">Connection <span class="highlight">Trends</span></h4>
+                                <select id="chart-timeframe"
+                                    class="form-control-sm bg-dark border-secondary text-light">
+                                    <option value="7d">Last 7 Days</option>
+                                    <option value="30d">Last 30 Days</option>
+                                </select>
+                            </div>
+                            <canvas id="connectionChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card h-100">
+                            <h4 class="mb-4">Tool <span class="highlight">Mastery</span></h4>
+                            <div id="tool-mastery-list">
+                                <p class="text-muted text-center py-5">Complete simulations to see your mastery stars!
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <!-- Achievements Section -->
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="mb-4">Achievement <span class="highlight">Gallery</span></h3>
+                        <div id="achievements-gallery" class="row">
+                            <div class="col-md-12 text-center text-muted py-5">
+                                <i class="fa-solid fa-lock fa-3x mb-3" style="opacity: 0.2;"></i>
+                                <p>Earn your first badge to unlock the gallery!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </div>
 
     <!-- Chart.js -->

@@ -61,7 +61,7 @@ exports.postLogin = async (req, res) => {
             username: user.username,
             email: user.email,
             level: user.level,
-            role: user.role
+            role: user.is_admin ? 'admin' : 'user'
         };
 
         req.flash('success', `Welcome back, ${user.username}!`);
